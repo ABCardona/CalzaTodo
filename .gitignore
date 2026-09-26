@@ -1,0 +1,13 @@
+# Dependencias instaladas por npm (no se suben al repositorio ni al .zip)
+node_modules/
+
+# Logs de npm
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Archivos del sistema operativo / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

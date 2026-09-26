@@ -1,0 +1,27 @@
+{
+  "name": "calzatodo",
+  "version": "1.0.0",
+  "description": "CalzaTodo - Mini tienda de zapatos en JavaScript vanilla que consume la API de Platzi (escuelajs.co) y filtra la categoria Shoes. Laboratorio 4 - Fundacion Kinal.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "eslint .",
+    "prepare": "husky"
+  },
+  "keywords": [
+    "javascript",
+    "vanilla",
+    "api",
+    "eslint",
+    "husky"
+  ],
+  "author": "ABCardona",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.11.0",
+    "globals": "^17.12.0",
+    "husky": "^9.1.7"
+  }
+}

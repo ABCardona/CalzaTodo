@@ -1,0 +1,512 @@
+/* ============================================================
+   CalzaTodo - Hoja de estilos
+   Laboratorio 4 | Fundacion Kinal
+   ------------------------------------------------------------
+   Organizacion:
+   1. Variables y reset
+   2. Base y utilidades
+   3. Encabezado
+   4. Barra de herramientas (buscador / orden)
+   5. Estados (carga, error, vacio)
+   6. Rejilla y tarjetas de producto
+   7. Pie de pagina
+   8. Adaptacion a pantallas pequenas
+   ============================================================ */
+
+/* ---------- 1. Variables y reset ---------- */
+:root {
+  /* Paleta */
+  --color-primary: #4338ca;
+  --color-primary-dark: #3730a3;
+  --color-primary-light: #eef2ff;
+  --color-accent: #ea580c;
+  --color-bg: #f4f6fb;
+  --color-surface: #ffffff;
+  --color-text: #0f172a;
+  --color-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-danger: #b91c1c;
+  --color-danger-bg: #fef2f2;
+
+  /* Formas y sombras */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 10px 25px rgba(15, 23, 42, 0.10);
+  --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.16);
+
+  /* Tipografia y medidas */
+  --font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --container-width: 1180px;
+  --transition: 180ms ease;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.25;
+}
+
+p {
+  margin: 0;
+}
+
+/* ---------- 2. Base y utilidades ---------- */
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+.btn {
+  font: inherit;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: background-color var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.btn--primary {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.btn--secondary {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.btn--secondary:hover {
+  background-color: var(--color-primary-light);
+}
+
+.btn--ghost {
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-border);
+  padding: 7px 14px;
+  font-size: 0.85rem;
+}
+
+.btn--ghost:hover {
+  background-color: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.btn:focus-visible,
+.search-box__input:focus-visible,
+.select:focus-visible,
+.card__toggle:focus-visible {
+  outline: 3px solid rgba(67, 56, 202, 0.35);
+  outline-offset: 2px;
+}
+
+/* ---------- 3. Encabezado ---------- */
+.site-header {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: #fff;
+  padding-block: 26px;
+  box-shadow: var(--shadow-md);
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand__logo {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  fill: #fff;
+  stroke: #fff;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+}
+
+.brand__name {
+  font-size: 1.9rem;
+  letter-spacing: -0.5px;
+}
+
+.brand__tagline {
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* ---------- 4. Barra de herramientas ---------- */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  margin-top: 28px;
+  padding: 18px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.toolbar__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.toolbar__field--search {
+  flex: 1 1 320px;
+}
+
+.toolbar__label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--color-muted);
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box__icon {
+  position: absolute;
+  left: 12px;
+  width: 18px;
+  height: 18px;
+  stroke: var(--color-muted);
+  fill: none;
+  pointer-events: none;
+}
+
+.search-box__input,
+.select {
+  font: inherit;
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: #fff;
+  color: var(--color-text);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.search-box__input {
+  padding-left: 38px;
+}
+
+.search-box__input:focus,
+.select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.12);
+}
+
+.select {
+  min-width: 210px;
+  cursor: pointer;
+}
+
+.result-info {
+  margin-block: 18px 6px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+/* ---------- 5. Estados ---------- */
+.state-panel {
+  margin-top: 20px;
+  padding: 44px 24px;
+  text-align: center;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.state-panel__title {
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+}
+
+.state-panel__text {
+  color: var(--color-muted);
+  margin-bottom: 20px;
+}
+
+.state-panel--error {
+  border-color: #fecaca;
+  background-color: var(--color-danger-bg);
+}
+
+.state-panel--error .state-panel__title {
+  color: var(--color-danger);
+}
+
+/* Esqueleto de carga */
+.skeleton {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.skeleton__media,
+.skeleton__line {
+  background: linear-gradient(90deg, #e9edf5 25%, #f4f6fb 37%, #e9edf5 63%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.3s ease infinite;
+}
+
+.skeleton__media {
+  aspect-ratio: 4 / 3;
+}
+
+.skeleton__body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton__line {
+  height: 12px;
+  border-radius: 999px;
+}
+
+.skeleton__line--short {
+  width: 45%;
+}
+
+.skeleton__line--medium {
+  width: 70%;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* ---------- 6. Rejilla y tarjetas ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 22px;
+  margin-block: 18px 48px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card__media {
+  aspect-ratio: 4 / 3;
+  background-color: var(--color-primary-light);
+  overflow: hidden;
+}
+
+.card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 320ms ease;
+}
+
+.card:hover .card__image {
+  transform: scale(1.06);
+}
+
+.card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 16px;
+  flex-grow: 1;
+}
+
+.card__tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.card__title {
+  font-size: 1rem;
+  min-height: 2.6em;
+}
+
+.card__price {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.card__details {
+  width: 100%;
+  padding-top: 12px;
+  border-top: 1px dashed var(--color-border);
+  animation: fade-in 220ms ease;
+}
+
+.card__details[hidden] {
+  display: none;
+}
+
+.card__description {
+  font-size: 0.87rem;
+  color: var(--color-muted);
+}
+
+.card__thumbs {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.card__thumb {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  cursor: zoom-in;
+  transition: transform var(--transition);
+}
+
+.card__thumb:hover {
+  transform: scale(1.08);
+}
+
+.card__id {
+  margin-top: 10px;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- 7. Pie ---------- */
+.site-footer {
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding-block: 24px;
+  text-align: center;
+  font-size: 0.88rem;
+}
+
+.site-footer__muted {
+  margin-top: 4px;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+/* ---------- 8. Pantallas pequenas ---------- */
+@media (max-width: 640px) {
+  .brand__name {
+    font-size: 1.5rem;
+  }
+
+  .select {
+    min-width: 100%;
+  }
+
+  .toolbar__field {
+    width: 100%;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+
+  .card__title {
+    font-size: 0.92rem;
+  }
+}
+
+/* Respeta la preferencia de reducir animaciones */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
