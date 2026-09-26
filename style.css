@@ -375,6 +375,13 @@ p {
   transform: scale(1.06);
 }
 
+/* La aplica script.js cuando la imagen del producto no se puede cargar:
+   el placeholder se centra con holgura en lugar de deformarse. */
+.card__image--fallback {
+  object-fit: contain;
+  padding: 12px;
+}
+
 .card__body {
   display: flex;
   flex-direction: column;
