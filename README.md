@@ -1,9 +1,45 @@
 # CalzaTodo
 
 **Laboratorio 4 - Fundacion Kinal**
-Mini tienda de zapatos en JavaScript vanilla que consume la API publica de
-Platzi (Escuela JS) y muestra unicamente los productos de la categoria
-**`Shoes`**.
+
+## De que se trata
+
+CalzaTodo es una tienda de zapatos sencilla, escrita solo con HTML, CSS y
+JavaScript, sin frameworks ni librerias. La idea es que la pagina le pida el
+catalogo completo a la API publica de Platzi (Escuela JS) y se quede unicamente
+con los productos de la categoria `Shoes`, de modo que el usuario vea sola una
+tienda de zapatos y no un catalogo mezclado con ropa, muebles y electronica.
+
+Una vez que los datos llegan, la aplicacion se encarga de pintarlos en una
+rejilla de tarjetas. Cada tarjeta muestra la fotografia del zapato, su nombre y
+su precio. Encima de la rejilla hay dos controles: un buscador de texto y un
+desplegable para ordenar. El buscador filtra mientras el usuario escribe,
+comparando lo que se escribe contra el nombre y la descripcion de cada producto
+sin distinguir mayusculas, y espera unos milisegundos antes de volver a pintar
+para no saturar el navegador. El desplegable permite ordenar por precio de menor
+a mayor, de mayor a menor, por nombre de A a Z o de Z a A, y tambien dejar el
+orden original con el que llega la API.
+
+Ademas de lo basico, cada tarjeta tiene un boton "Ver detalle" que desplega la
+descripcion completa del producto junto con sus otras fotografias, y esas
+miniaturas se pueden pulsar para cambiar la foto principal. La aplicacion tambien
+contempla lo que suele pasarse por alto: mientras los datos se descargan se
+muestra un esqueleto de carga animado, si la API falla aparece un mensaje de
+error con un boton "Reintentar", y si la busqueda no arroja resultados se
+avisa de forma explicita en lugar de mostrar una pagina en blanco.
+
+Para asegurar que el codigo se mantenga ordenado, el proyecto usa dos herramientas
+de control de calidad. **ESLint** revisa el codigo y aplica un conjunto de
+reglas que obligan, entre otras cosas, a no dejar variables sin usar, a comparar
+con `===` en vez de `==` y a declarar las constantes con `const`. **Husky** se
+encarga de que esas reglas no se puedan saltar: instala un hook de Git que
+ejecuta ESLint antes de cada commit, de modo que si el codigo tiene errores el
+commit se rechaza solo. En la seccion 5 de este README se documenta una prueba
+real de ese mecanismo, con la salida de la terminal.
+
+Los datos y las fotografias de los zapatos **no fueron creados para este
+proyecto**: vienen directamente de la API, y cada producto trae sus propias URLs
+de imagen. Lo unico que se dibujó a mano fue el logotipo.
 
 ---
 
@@ -33,6 +69,9 @@ Platzi (Escuela JS) y muestra unicamente los productos de la categoria
 - **Delegacion de eventos** en la rejilla: un solo listener atiende el boton
   de detalle y las miniaturas de todas las tarjetas.
 - **`sortProducts()` no muta el catalogo**: trabaja sobre una copia.
+- **Logotipo de Tabler Icons** (icono `shoe`, licencia MIT, © Pawel Kuna),
+  incrustado como SVG en linea para no depender de una fuente externa.
+
 
 ### Detalle importante sobre la API
 
@@ -60,10 +99,13 @@ CalzaTodo/
 ├── .husky/
 │   └── pre-commit      # hook que ejecuta ESLint antes de cada commit
 ├── .gitignore          # excluye node_modules y archivos del sistema
+├── capturas/           # capturas de pantalla de la entrega
+│   └── LEEME.md
 ├── eslint.config.js    # configuracion de ESLint (formato flat config)
 ├── index.html          # estructura de la pagina + <template> de la tarjeta
 ├── package.json        # dependencias y scripts
 ├── package-lock.json   # versiones exactas (se genera con npm install)
+├── README.md
 ├── script.js           # logica: API, busqueda, orden y renderizado
 └── style.css           # diseno, paleta y adaptacion a movil
 ```
@@ -295,7 +337,6 @@ npm test         # mismo: tambien ejecuta ESLint (lo que ejecuta el hook)
 Ademas del lint, la logica se ejercito contra la API en vivo con un arnes
 temporal de Node (no forma parte de la entrega). Resultado: **36 de 36
 comprobaciones correctas**, incluyendo:
-
 - El filtro por `Shoes` coincide con el conteo manual de la categoria.
 - Los cuatro criterios de ordenamiento producen el orden esperado.
 - `sortProducts()` no modifica el catalogo original.
@@ -306,11 +347,26 @@ comprobaciones correctas**, incluyendo:
 
 ---
 
-## 8. Technologies y recursos
+## 8. Capturas de pantalla
+
+La carpeta `capturas/` guarda las imagenes que respaldan la entrega, y su
+`LEEME.md` lista cuales son. En resumen, conviene capturar:
+
+1. El catalogo cargado, con los zapatos de la categoria `Shoes`.
+2. El buscador con un texto escrito y el resultado ya filtrado.
+3. El desplegable de ordenar con el catalogo reordenado por precio.
+4. Una tarjeta con "Ver detalle" abierto y sus miniaturas.
+5. La terminal con el commit rechazado por ESLint.
+6. La terminal con el commit completado tras corregir el error.
+
+---
+
+## 9. Technologies y recursos
 
 - **HTML5, CSS3 y JavaScript (ES2022) sin frameworks ni dependencias en tiempo de ejecucion.**
 - **ESLint 10** + **Husky 9** como control de calidad.
 - API de datos: <https://api.escuelajs.co/api/v1/products>
+- Icono del logotipo: [Tabler Icons](https://tabler.io/icons) `shoe`, licencia MIT.
 
 ---
 

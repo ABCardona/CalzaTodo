@@ -1,52 +1,21 @@
-/* ============================================================
- * CalzaTodo - logica de la aplicacion
- * Laboratorio 4 | Fundacion Kinal
- * ------------------------------------------------------------
- * El archivo se divide en 8 bloques:
- *   1. Constantes
- *   2. Referencias al DOM
- *   3. Estado de la aplicacion
- *   4. Obtener y preparar los datos (API + filtro por categoria)
- *   5. Busqueda y ordenamiento
- *   6. Renderizado en el DOM
- *   7. Manejo de eventos
- *   8. Inicializacion
- * ============================================================ */
-
-/* ============================================================
- * 1. CONSTANTES
- * ============================================================ */
-
-/** Endpoint publico de la API de Platzi (Escuela JS). */
 const API_URL = 'https://api.escuelajs.co/api/v1/products';
-
-/** Unica categoria que nos interesa para este laboratorio. */
 const TARGET_CATEGORY = 'Shoes';
-
-/** Espera antes de volver a renderizar al escribir en el buscador. */
 const SEARCH_DEBOUNCE_MS = 250;
-
-/** Cuantas tarjetas de esqueleto mostrar mientras llegan los datos. */
 const SKELETON_COUNT = 8;
 
-/** Imagen de respaldo por si un producto no carga o no trae imagen. */
+// Se usa si un producto no trae imagen o la URL esta caida.
 const PLACEHOLDER_IMAGE =
   "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect width='400' height='300' fill='%23eef2ff'/%3E%3Ctext x='200' y='158' fill='%234338ca' font-family='sans-serif' font-size='22' text-anchor='middle'%3ECalzaTodo%3C/text%3E%3C/svg%3E";
 
-/** Formato de moneda para mostrar los precios (la API los entrega en USD). */
+// narrowSymbol da "$951" en lugar de "USD 951", que ocupa mucho en la tarjeta.
 const priceFormatter = new Intl.NumberFormat('es-MX', {
   style: 'currency',
   currency: 'USD',
-  // narrowSymbol muestra "$951" en vez de "USD 951", que ocupa mucho en la tarjeta.
   currencyDisplay: 'narrowSymbol',
   minimumFractionDigits: 0,
   maximumFractionDigits: 0,
 });
 
-/* ============================================================
- * 2. REFERENCIAS AL DOM
- * Se guardan en constantes para no consultarlas en cada evento.
- * ============================================================ */
 const searchInput = document.querySelector('#searchInput');
 const sortSelect = document.querySelector('#sortSelect');
 const productGrid = document.querySelector('#productGrid');
@@ -58,31 +27,17 @@ const retryButton = document.querySelector('#retryButton');
 const clearSearchButton = document.querySelector('#clearSearchButton');
 const cardTemplate = document.querySelector('#productCardTemplate');
 
-/* ============================================================
- * 3. ESTADO DE LA APLICACION
- * Un unico objeto concentra lo que la app necesita saber.
- * ============================================================ */
 const state = {
-  /** Zapatos ya filtrados por categoria. */
   shoes: [],
-  /** Texto actual del buscador (en minusculas). */
   search: '',
-  /** Criterio de ordenamiento elegido en el <select>. */
   sort: 'default',
-  /** 'loading' | 'ready' | 'error'. */
-  status: 'loading',
-  /** Mensaje de error para mostrar si status === 'error'. */
+  status: 'loading', // 'loading' | 'ready' | 'error'
   error: '',
-  /** IDs de las tarjetas con el detalle abierto. */
-  expanded: new Set(),
+  expanded: new Set(), // ids de las tarjetas con el detalle abierto
 };
 
-/* ============================================================
- * 4. OBTENER Y PREPARAR LOS DATOS
- * ============================================================ */
-
 /**
- * Descarga el catalogo y se queda solo con la categoria "Shoes".
+ * Descarga el catalogo y conserva solo la categoria "Shoes".
  * @returns {Promise<void>} resuelve cuando la interfaz ya esta actualizada.
  */
 async function loadProducts() {
@@ -93,14 +48,12 @@ async function loadProducts() {
   try {
     const response = await fetch(API_URL);
 
-    // fetch solo falla por red; un 404/500 hay que detectarlo a mano.
+    // fetch solo falla por red; un 404 o 500 hay que detectarlo a mano.
     if (!response.ok) {
       throw new Error(`La API respondio con el estado ${response.status}`);
     }
 
     const products = await response.json();
-
-    // Nos quedamos unicamente con los zapatos.
     state.shoes = filterByCategory(products, TARGET_CATEGORY);
     state.status = 'ready';
   } catch (error) {
@@ -115,8 +68,8 @@ async function loadProducts() {
 }
 
 /**
- * La API entrega la categoria como texto plano o como objeto
- * ({ id, name, slug, image }). Esta funcion cubre ambos casos.
+ * La API entrega la categoria como objeto ({ id, name, slug }) o como texto
+ * plano, segun la version, asi que se cubren los dos casos.
  * @param {{category: unknown}} product producto de la API.
  * @returns {string} nombre de la categoria, o cadena vacia.
  */
@@ -149,10 +102,6 @@ function filterByCategory(products, category) {
   );
 }
 
-/* ============================================================
- * 5. BUSQUEDA Y ORDENAMIENTO
- * ============================================================ */
-
 /**
  * Indica si un producto coincide con el texto buscado.
  * @param {{title: string, description: string}} product producto.
@@ -171,7 +120,7 @@ function matchesSearch(product, term) {
 
 /**
  * Devuelve una copia del catalogo ordenada segun el criterio elegido.
- * No modifica el arreglo original.
+ * Trabaja sobre una copia para no modificar el arreglo original.
  * @param {Array<object>} products catalogo de zapatos.
  * @param {string} sortBy criterio de ordenamiento.
  * @returns {Array<object>} catalogo ordenado.
@@ -179,7 +128,7 @@ function matchesSearch(product, term) {
 function sortProducts(products, sortBy) {
   const copia = [...products];
 
-  // "es" para comparar correctamente los acentos (ej. "Raqueta" vs "Raquetas").
+  // "es" para que localeCompare trate bien los acentos y la ñ.
   const compararNombres = (a, b) =>
     String(a.title).localeCompare(String(b.title), 'es', {
       sensitivity: 'base',
@@ -195,13 +144,12 @@ function sortProducts(products, sortBy) {
     case 'name-desc':
       return copia.sort((a, b) => compararNombres(b, a));
     default:
-      // "Relevancia": se respeta el orden en que llega la API.
-      return copia;
+      return copia; // "Relevancia": se respeta el orden de la API.
   }
 }
 
 /**
- * Aplica busqueda + ordenamiento sobre el catalogo ya filtrado.
+ * Aplica busqueda y ordenamiento sobre el catalogo ya filtrado.
  * @returns {Array<object>} zapatos visibles segun el estado actual.
  */
 function getVisibleProducts() {
@@ -211,10 +159,6 @@ function getVisibleProducts() {
 
   return sortProducts(filtrados, state.sort);
 }
-
-/* ============================================================
- * 6. RENDERIZADO EN EL DOM
- * ============================================================ */
 
 /**
  * Convierte un precio numerico en texto con signo de moneda.
@@ -226,8 +170,8 @@ function formatPrice(value) {
 }
 
 /**
- * Muestra un placeholder si la imagen del producto no se puede cargar.
- * @param {HTMLImageElement} img elemento de imagen a vigilar.
+ * Cambia la imagen por el placeholder si la URL falla.
+ * @param {HTMLImageElement} img elemento a vigilar.
  */
 function applyImageFallback(img) {
   img.addEventListener('error', () => {
@@ -236,9 +180,6 @@ function applyImageFallback(img) {
   });
 }
 
-/**
- * Pinta las tarjetas de esqueleto mientras se espera la respuesta de la API.
- */
 function renderSkeletons() {
   const frag = document.createDocumentFragment();
 
@@ -274,9 +215,8 @@ function createThumbnail(src, alt) {
 }
 
 /**
- * Construye una tarjeta de producto clonando la plantilla del HTML.
- * Nunca se usa innerHTML con datos de la API: todos los textos se
- * asignan con textContent, lo que evita inyeccion de codigo.
+ * Construye una tarjeta clonando la plantilla del HTML. Los datos de la API
+ * se asignan con textContent, nunca con innerHTML, para evitar inyeccion.
  * @param {object} product producto a mostrar.
  * @returns {HTMLElement} tarjeta completa.
  */
@@ -293,7 +233,7 @@ function createCard(product) {
   const miniaturas = card.querySelector('.card__thumbs');
   const identificador = card.querySelector('.card__id');
 
-  // Imagen principal: la API puede mandar varias, usamos la primera.
+  // La API puede mandar varias imagenes por producto; se usa la primera.
   const imagenes = Array.isArray(product.images) ? product.images : [];
   imagen.src = imagenes[0] ?? PLACEHOLDER_IMAGE;
   imagen.alt = `Fotografia de ${product.title}`;
@@ -305,18 +245,16 @@ function createCard(product) {
   descripcion.textContent = product.description;
   identificador.textContent = `Codigo de producto: #${product.id}`;
 
-  // Miniaturas: permiten cambiar la foto principal de la tarjeta.
   imagenes.forEach((src) => {
     miniaturas.appendChild(createThumbnail(src, `Vista alternativa de ${product.title}`));
   });
 
-  // El detalle permanece abierto aunque el usuario vuelva a buscar o ordenar.
+  // El detalle sigue abierto aunque el usuario vuelva a buscar o a ordenar.
   const estaAbierto = state.expanded.has(product.id);
   detalles.hidden = !estaAbierto;
   botonDetalle.setAttribute('aria-expanded', String(estaAbierto));
   botonDetalle.textContent = estaAbierto ? 'Ocultar detalle' : 'Ver detalle';
 
-  // Guardamos el id en el DOM para recuperarlo al hacer clic.
   card.dataset.id = String(product.id);
 
   return card;
@@ -333,7 +271,6 @@ function renderCards(products) {
     frag.appendChild(createCard(product));
   });
 
-  // replaceChildren es mas rapido que innerHTML = '' + bucles.
   productGrid.replaceChildren(frag);
 }
 
@@ -351,8 +288,7 @@ function updatePanels(visible) {
     return;
   }
 
-  const sinResultados = state.status === 'ready' && visible.length === 0;
-  emptyState.hidden = !sinResultados;
+  emptyState.hidden = !(state.status === 'ready' && visible.length === 0);
 }
 
 /**
@@ -382,8 +318,7 @@ function renderResultInfo(visible) {
 }
 
 /**
- * Punto unico de renderizado: decide que mostrar y lo pinta.
- * Todas las actualizaciones de la interfaz pasan por aqui.
+ * Punto unico de renderizado: toda actualizacion de la interfaz pasa aqui.
  */
 function render() {
   const visible = getVisibleProducts();
@@ -401,12 +336,8 @@ function render() {
   productGrid.setAttribute('aria-busy', String(state.status === 'loading'));
 }
 
-/* ============================================================
- * 7. MANEJO DE EVENTOS
- * ============================================================ */
-
 /**
- * Retrasa la ejecucion de una funcion hasta que deja de llamarse.
+ * Retrasa la ejecucion hasta que la funcion deja de ser llamada.
  * Evita renderizar en cada tecla presionada.
  * @param {Function} fn funcion a envolver.
  * @param {number} delay espera en milisegundos.
@@ -421,22 +352,20 @@ function debounce(fn, delay) {
   };
 }
 
-/** Al escribir en el buscador: actualiza el estado y vuelve a pintar. */
 const handleSearchInput = debounce((event) => {
   state.search = event.target.value.trim().toLowerCase();
   render();
 }, SEARCH_DEBOUNCE_MS);
 
-/** Al cambiar el criterio de ordenamiento. */
 function handleSortChange(event) {
   state.sort = event.target.value;
   render();
 }
 
 /**
- * Un solo listener para toda la rejilla (delegacion de eventos):
- *   - si se pulsa "Ver detalle", abre o cierra la tarjeta;
- *   - si se pulsa una miniatura, cambia la imagen principal.
+ * Un solo listener para toda la rejilla (delegacion de eventos): si se pulsa
+ * "Ver detalle" abre o cierra la tarjeta, y si se pulsa una miniatura cambia
+ * la imagen principal.
  * @param {MouseEvent} event evento del clic.
  */
 function handleGridClick(event) {
@@ -457,8 +386,6 @@ function handleGridClick(event) {
   const detalles = card.querySelector('.card__details');
   const ahoraVisible = detalles.hidden;
 
-  // El atributo hidden se refleja tambien en el estado global, de modo que
-  // el detalle siga abierto aunque el usuario vuelva a buscar o a ordenar.
   detalles.hidden = !ahoraVisible;
   botonDetalle.setAttribute('aria-expanded', String(ahoraVisible));
   botonDetalle.textContent = ahoraVisible ? 'Ocultar detalle' : 'Ver detalle';
@@ -470,7 +397,6 @@ function handleGridClick(event) {
   }
 }
 
-/** Limpia el buscador y vuelve a mostrar todo el catalogo. */
 function handleClearSearch() {
   searchInput.value = '';
   state.search = '';
@@ -479,12 +405,10 @@ function handleClearSearch() {
   searchInput.focus();
 }
 
-/** Reintenta la carga despues de un error de red. */
 function handleRetry() {
   loadProducts();
 }
 
-/** Registra todos los listeners de la aplicacion. */
 function bindEvents() {
   searchInput.addEventListener('input', handleSearchInput);
   sortSelect.addEventListener('change', handleSortChange);
@@ -493,11 +417,6 @@ function bindEvents() {
   retryButton.addEventListener('click', handleRetry);
 }
 
-/* ============================================================
- * 8. INICIALIZACION
- * ============================================================ */
-
-/** Arranca la aplicacion: registra eventos y pide los datos. */
 function init() {
   bindEvents();
   loadProducts();

@@ -1,21 +1,4 @@
-/* ============================================================
-   CalzaTodo - Hoja de estilos
-   Laboratorio 4 | Fundacion Kinal
-   ------------------------------------------------------------
-   Organizacion:
-   1. Variables y reset
-   2. Base y utilidades
-   3. Encabezado
-   4. Barra de herramientas (buscador / orden)
-   5. Estados (carga, error, vacio)
-   6. Rejilla y tarjetas de producto
-   7. Pie de pagina
-   8. Adaptacion a pantallas pequenas
-   ============================================================ */
-
-/* ---------- 1. Variables y reset ---------- */
 :root {
-  /* Paleta */
   --color-primary: #4338ca;
   --color-primary-dark: #3730a3;
   --color-primary-light: #eef2ff;
@@ -28,7 +11,6 @@
   --color-danger: #b91c1c;
   --color-danger-bg: #fef2f2;
 
-  /* Formas y sombras */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 18px;
@@ -36,7 +18,6 @@
   --shadow-md: 0 10px 25px rgba(15, 23, 42, 0.10);
   --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.16);
 
-  /* Tipografia y medidas */
   --font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --container-width: 1180px;
   --transition: 180ms ease;
@@ -73,7 +54,6 @@ p {
   margin: 0;
 }
 
-/* ---------- 2. Base y utilidades ---------- */
 .container {
   width: 100%;
   max-width: var(--container-width);
@@ -131,7 +111,6 @@ p {
   outline-offset: 2px;
 }
 
-/* ---------- 3. Encabezado ---------- */
 .site-header {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   color: #fff;
@@ -152,12 +131,13 @@ p {
   gap: 14px;
 }
 
+/* El icono de Tabler dibuja con trazo (stroke="currentColor"), asi que basta
+   con poner color: white para que se pinta del color del encabezado. */
 .brand__logo {
   width: 46px;
   height: 46px;
   flex-shrink: 0;
-  fill: #fff;
-  stroke: #fff;
+  color: #fff;
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
 }
 
@@ -171,7 +151,6 @@ p {
   color: rgba(255, 255, 255, 0.82);
 }
 
-/* ---------- 4. Barra de herramientas ---------- */
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -254,7 +233,6 @@ p {
   color: var(--color-muted);
 }
 
-/* ---------- 5. Estados ---------- */
 .state-panel {
   margin-top: 20px;
   padding: 44px 24px;
@@ -284,7 +262,6 @@ p {
   color: var(--color-danger);
 }
 
-/* Esqueleto de carga */
 .skeleton {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -334,7 +311,6 @@ p {
   }
 }
 
-/* ---------- 6. Rejilla y tarjetas ---------- */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -375,8 +351,8 @@ p {
   transform: scale(1.06);
 }
 
-/* La aplica script.js cuando la imagen del producto no se puede cargar:
-   el placeholder se centra con holgura en lugar de deformarse. */
+/* La aplica script.js cuando la imagen no carga: el placeholder se centra
+   con holgura en lugar de deformarse. */
 .card__image--fallback {
   object-fit: contain;
   padding: 12px;
@@ -467,7 +443,6 @@ p {
   }
 }
 
-/* ---------- 7. Pie ---------- */
 .site-footer {
   background-color: var(--color-surface);
   border-top: 1px solid var(--color-border);
@@ -482,7 +457,6 @@ p {
   font-size: 0.8rem;
 }
 
-/* ---------- 8. Pantallas pequenas ---------- */
 @media (max-width: 640px) {
   .brand__name {
     font-size: 1.5rem;
@@ -506,7 +480,6 @@ p {
   }
 }
 
-/* Respeta la preferencia de reducir animaciones */
 @media (prefers-reduced-motion: reduce) {
 
   *,
